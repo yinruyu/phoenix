@@ -1,5 +1,4 @@
 <?php
-
 class Crontab
 {
     public function __construct()
