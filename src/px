@@ -1,0 +1,87 @@
+#!/usr/local/Cellar/php@7.1/7.1.17/bin/php
+
+<?php
+date_default_timezone_set('PRC');
+$envContent = trim(file_get_contents("/etc/phoenix.conf"));
+if (!isset($_SERVER["PHOENIX_ENV"])) {
+    preg_match('/PHOENIX_ENV=([a-zA-Z]{1,})/', $envContent, $match);
+    $_SERVER["PHOENIX_ENV"] = $match[1];
+}
+preg_match('/PRJ_ENV=([a-zA-Z]{1,})/', $envContent, $match);
+$_SERVER["PRJ_ENV"] = $match[1];
+//dl('yaml.so');
+//./test.php reload,start   -e   dev -s ddd,api,onsole api_cust
+$phoenixEnv = $_SERVER["PHOENIX_ENV"];
+$phoenix    = new PhoenixBin();
+$phoenix->run();
+
+class PhoenixBin
+{
+    private $rootSrc;
+
+    public function run()
+    {
+        $this->before();
+        $this->start();
+        $this->after();
+    }
+
+    private function before()
+    {
+        $this->rootSrc = $this->getRootSrc($_SERVER["PHOENIX_ENV"]);
+        if (!file_exists($this->rootSrc)) {
+            exit(self::errorOut("运行失败：{$this->rootSrc}目录不存在！"));
+        }
+    }
+
+    private function start()
+    {
+        $this->autoload();
+        $dirName  = getcwd();
+        $yamlFile = $dirName . "/_px/run.yaml";
+        if (!file_exists($yamlFile)) {
+            exit(self::errorOut("运行失败：{$yamlFile}文件不存在！"));
+        }
+        $_SERVER[\Phoenix\Core\Reborn::PX_BIN]  = $this->rootSrc . "/px";
+        $_SERVER[\Phoenix\Core\Reborn::PX_HOME] = $this->rootSrc;
+        try {
+            \Phoenix\Core\Reborn::run($yamlFile, $_SERVER['argv']);
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    private function after()
+    {
+
+    }
+
+    private function autoload()
+    {
+        spl_autoload_register(function ($clasName) {
+            $fileClsName = str_replace("\\", "/", $clasName);
+            $fileClsPath = $this->rootSrc . "/" . $fileClsName . ".php";
+            if (!file_exists($fileClsPath)) {
+                throw new Exception(self::errorOut($clasName . " file not exist!"));
+            }
+            include $fileClsPath;
+        });
+    }
+
+    public static function getRootSrc($phoenixEnv)
+    {
+        if ($phoenixEnv === "dev") {
+            //return "/home/{$_SERVER["USER"]}/devspace/phoenix/src";
+            return "/Users/{$_SERVER["USER"]}/PhpstormProjects/ayi/phoenix";
+        } elseif ($phoenixEnv === "product") {
+            return "/data/x/tools/phoenix";
+        } else {
+            exit(self::errorOut("运行失败：没有设置phoenix机器运行环境变量，请添加环境变量“PHOENIX_ENV=dev”或者“PHOENIX_ENV=product”."));
+        }
+    }
+
+    private static function errorOut($errorMsg)
+    {
+        return "\033[0;31m{$errorMsg}\033[0m\n";
+    }
+}

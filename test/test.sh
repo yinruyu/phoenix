@@ -1,0 +1,1 @@
+echo ${PRJ_ROOT};

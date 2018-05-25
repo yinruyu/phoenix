@@ -1,0 +1,44 @@
+_nginx:
+    _dev:
+       DOMAIN     : "{$USER}.dev.ayisvc.cn"
+       PORT       : "80"
+_project:
+    _base:
+       PRJ_NAME    : "phoenix"
+#       AYI_SDKS    : "{$HOME}/devspace/ayi_sdks/src"
+#       AYI_SVC     : "{$HOME}/devspace/ayi_svcs/src/api_cust"
+    _dev:
+       PRJ_ROOT    : "{$HOME}/PhpstormProjects/ayi/phoenix"
+_system:
+    api :
+          name    : "api"
+          module  : "web"
+          res  :
+                SYS_DOMAIN    : "api.phoenix.{$DOMAIN}"
+                SYS_PORT      : "{$PORT}"
+#                SYS_INCLUDE   : "{$PRJ_ROOT}/src/Phoenix:{$AYI_SDKS}:{$AYI_SVC}:{$PRJ_ROOT}/src/sys_api"
+                SYS_INCLUDE   : "{$PRJ_ROOT}/Phoenix:{$PRJ_ROOT}/src/sys_api"
+    api1 :
+          name   : "api1"
+          module : "web"
+          res  :
+              SYS_DOMAIN    : "api.phoenix1.{$DOMAIN}"
+              SYS_PORT      : "{$PORT}"
+    console:
+          name    : "console"
+          module  : "script"
+          res     :
+                PHP_BIN : "/usr/local/Cellar/php@7.1/7.1.17/bin/php"
+                SYS_INCLUDE   : "{$PRJ_ROOT}/src/Phoenix:{$AYI_SDKS}:{$AYI_SVC}"
+          daemon_php  :
+                 - "{$PRJ_ROOT}/src/sys_console/daemon_run1.php ab 参数1      sdffs"
+                 - "{$PRJ_ROOT}/src/sys_console/daemon_run2.php ab 参数2      sdffs"
+          shell :
+                - "{$PRJ_ROOT}/test/test.sh"
+                - "{$PRJ_ROOT}/test/test.sh"
+    crontab :
+          name    : "crontab"
+          module  : "crontab"
+          res     :
+                 PHP_BIN  : "/usr/local/Cellar/php@7.1/7.1.17/bin/php"
+                 MINUTE   : 1

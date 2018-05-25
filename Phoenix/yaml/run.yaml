@@ -1,0 +1,71 @@
+_fpm:
+    #fpm 存放fpm pm的参数
+    _dev :
+       MAX_CHILDREN      : "5"
+       START_SERVERS     : "2"
+       MIN_SPARE_SERVERS : "2"
+       MAX_SPARE_SERVERS : "3"
+    _lab :
+       MAX_CHILDREN      : "5"
+       START_SERVERS     : "2"
+       MIN_SPARE_SERVERS : "2"
+       MAX_SPARE_SERVERS : "3"
+    _demo :
+       MAX_CHILDREN      : "10"
+       START_SERVERS     : "2"
+       MIN_SPARE_SERVERS : "2"
+       MAX_SPARE_SERVERS : "3"
+    _gamma :
+       MAX_CHILDREN      : "20"
+       START_SERVERS     : "5"
+       MIN_SPARE_SERVERS : "5"
+       MAX_SPARE_SERVERS : "10"
+    _online :
+       MAX_CHILDREN      : "50"
+       START_SERVERS     : "5"
+       MIN_SPARE_SERVERS : "5"
+       MAX_SPARE_SERVERS : "10"
+_phpini:
+    _dev :
+       PHP_ERROR         : "E_ALL & ~E_NOTICE"
+    _demo :
+       PHP_ERROR         : "E_ALL & ~E_NOTICE"
+    _gamma :
+       PHP_ERROR         : "E_ERROR"
+    _online :
+       PHP_ERROR         : "E_ERROR"
+_pool :
+  #系统进程目录
+    _dev :
+        FPM_USER : "{$USER}"
+        RUN_USER : "{$USER}"
+    _lab :
+        FPM_USER : "ayb"
+        RUN_USER : "ayb"
+    _demo :
+        FPM_USER : "ayb"
+        RUN_USER : "ayb"
+    _gamma :
+        FPM_USER : "ayb"
+        RUN_USER : "ayb"
+    _online :
+        FPM_USER : "ayb"
+        RUN_USER : "ayb"
+_project:
+    _base:
+       RUN_PATH    : "/data/x/pools/{$PRJ_NAME}_{$RUN_USER}"
+#       ALIEN_PATH  : "/data/x/framework/alien"
+       SYS_ROUTER  : "{$RUN_PATH}/{$SYS_NAME}/conf/router.idx.serialize"
+       PRJ_CLASS   : "{$RUN_PATH}/{$SYS_NAME}/conf/class.idx.serialize"
+       PRJ_VERSION : "{$PRJ_ROOT}/src/version.txt"
+       APP_TPL     : "{$PRJ_ROOT}/conf/{$SYS_NAME}.conf"
+       LOG_PATH    : "/data/alogs/project/{$PRJ_NAME}_{$RUN_USER}"
+       FPM_SOCKET  : "{$RUN_PATH}/{$SYS_NAME}/{$SYS_NAME}_fpm.scok"
+       FPM_PID     : "{$RUN_PATH}/{$SYS_NAME}/{$SYS_NAME}_fpm.pid"
+       FPM_ENV     : "{$RUN_PATH}/{$SYS_NAME}/{$SYS_NAME}_fpm.env"
+#       FPM_BIN     : "/usr/local/Cellar/php\@7.1/7.1.17/sbin/php-fpm"
+       ENVIRONMENT :
+                     - dev
+                     - lab
+                     - demo
+                     - online
